@@ -27,18 +27,19 @@
         <CENter>
             <h1>TEACHER REGISTRATION </h1>
         </CENter>
+
         <form action="/teachers" method="POST">
             <!-- 2 column grid layout with text inputs for the first and last names -->
             <div class="row mb-4">
                 <div class="col">
                     <div class="form-outline">
-                        <input type="text" id="form6Example1" class="form-control" required>
+                        <input type="text" id="form6Example1" class="form-control" name=teacher[firstName] required>
                         <label class="form-label" for="form6Example1">First name</label>
                     </div>
                 </div>
                 <div class="col">
                     <div class="form-outline">
-                        <input type="text" id="form6Example2" class="form-control" required>
+                        <input type="text" id="form6Example2" class="form-control" name=teacher[lastName] required>
                         <label class="form-label" for="form6Example2">Last name</label>
                     </div>
                 </div>
@@ -46,19 +47,19 @@
 
             <!-- Number input -->
             <div class="form-outline mb-4">
-                <input type="text" id="form6Example6" class="form-control" required>
+                <input type="text" id="form6Example6" class="form-control" name=teacher[qualification] required>
                 <label class="form-label" for="form6Example6">Qualification</label>
             </div>
             <div class="row mb-4">
                 <div class="col">
                     <div class="form-outline">
-                        <input type="text" id="form6Example1" class="form-control" required>
+                        <input type="text" id="form6Example1" class="form-control" name=teacher[experience] required>
                         <label class="form-label" for="form6Example1">Experience</label>
                     </div>
                 </div>
                 <div class="col">
                     <div class="form-outline">
-                        <input type="text" id="form6Example2" class="form-control" required>
+                        <input type="text" id="form6Example2" class="form-control" name=teacher[gender] required>
                         <label class="form-label" for="form6Example2">Gender</label>
                     </div>
                 </div>
@@ -66,14 +67,14 @@
 
             <!-- Text input -->
             <div class="form-outline mb-4">
-                <input type="text" id="form6Example3" class="form-control" required>
+                <input type="text" id="form6Example3" class="form-control" name=teacher[subject] required>
                 <label class="form-label" for="form6Example3">Subject</label>
             </div>
 
 
             <!-- Text input -->
             <div class="form-outline mb-4">
-                <input type="text" id="form6Example4" class="form-control" required>
+                <input type="text" id="form6Example4" class="form-control" name=teacher[address] required>
                 <label class="form-label" for="form6Example4">Address</label>
             </div>
 
@@ -81,57 +82,47 @@
                 <!-- Email input -->
                 <div class="col">
                     <div class="form-outline mb-4">
-                        <input type="email" id="form6Example5" class="form-control" rquired>
+                        <input type="email" id="form6Example5" class="form-control" name=teacher[email] required>
                         <label class="form-label" for="form6Example5">Email</label>
                     </div>
                 </div>
                 <!-- password input -->
                 <div class="col">
                     <div class="form-outline mb-4">
-                        <input type="number" id="form6Example5" class="form-control">
-                        <label class="form-label" for="form6Example5">Enter OTP</label>
-                    </div>
-                </div>
-            </div>
-            <div class="row mb-4">
-                <!-- Email input -->
-                <div class="col">
-                    <div class="form-outline mb-4">
-                        <input type="number" id="form6Example5" class="form-control" required>
+                        <input type="number" id="form6Example5" class="form-control" name=teacher[phone]>
                         <label class="form-label" for="form6Example5">Phone</label>
-                    </div>
-                </div>
-                <!-- password input -->
-                <div class="col">
-                    <div class="form-outline mb-4">
-                        <input type="number" id="form6Example5" class="form-control">
-                        <label class="form-label" for="form6Example5">Enter OTP</label>
                     </div>
                 </div>
             </div>
             <!-- Message input -->
             <div class="form-outline mb-4">
-                <textarea class="form-control" id="form6Example7" rows="4"></textarea>
+                <textarea class="form-control" id="form6Example7" rows="4" name=teacher[additionalInfo]></textarea>
                 <label class="form-label" for="form6Example7">Additional information</label>
+            </div>
+
+            <!-- username -->
+            <div class="form-outline mb-4">
+                <input type="text" id="form6Example5" class="form-control" name=teacher[username]>
+                <label class="form-label" for="form6Example5">Username</label>
             </div>
 
 
             <!-- password input -->
             <div class="form-outline mb-4">
-                <input type="text" id="form6Example5" class="form-control">
+                <input type="password" id="form6Example5" class="form-control" name=teacher[password]>
                 <label class="form-label" for="form6Example5">Password</label>
             </div>
 
             <!-- confirm password input -->
             <div class="form-outline mb-4">
-                <input type="text" id="form6Example5" class="form-control">
+                <input type="password" id="form6Example5" class="form-control">
                 <label class="form-label" for="form6Example5">Confirm Password</label>
             </div>
 
             <!-- Checkbox -->
 
             <!-- Submit button -->
-            <button class="btn btn-primary btn-block mb-4">REGISTER </button>
+            <button class="btn btn-primary btn-block mb-4">REGISTER</button>
         </form>
 
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js "
@@ -151,7 +142,7 @@
     </div>
 </body>
 
-</html> integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy " crossorigin="anonymous ">
+</html>
 </script>
 </span>
 </section>
