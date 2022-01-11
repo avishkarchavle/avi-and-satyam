@@ -6,7 +6,13 @@ const path = require("path");
 const methodOverride = require('method-override')
 const Student = require('./models/student.js')
 const Teacher = require('./models/teacher.js')
-    // var bodyParser = require('body-parser');
+const catchAsync = require('./utils/catchAsync');
+const expressError = require('./utils/expressError');
+const session = require('express-session');
+const passport = require('passport');
+const localStrategy = require("passport-local")
+
+const { validateTeacher, validateStudent } = require('./middleware')
 
 app.use(express.urlencoded({ extended: true }))
 app.use(methodOverride("_method"))
@@ -30,6 +36,31 @@ db.once("open", () => {
     console.log("Databse connected");
 });
 
+const sessionConfig = {
+    name: 'session',
+    secret: 'this is my secret',
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        httpOnly: true,
+        expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+        maxAge: 1000 * 60 * 60 * 24 * 7
+    }
+}
+
+app.use(session(sessionConfig));
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.use(new localStrategy(Student.authenticate()));
+passport.serializeUser(Student.serializeUser());
+passport.deserializeUser(Student.deserializeUser());
+
+passport.use(new localStrategy(Teacher.authenticate()));
+passport.serializeUser(Teacher.serializeUser());
+passport.deserializeUser(Teacher.deserializeUser());
+
+
 app.get('/home', (req, res) => {
     res.render("home");
 })
@@ -47,18 +78,18 @@ app.get('/students/edit', (req, res) => {
     res.render('students/edit');
 })
 
-app.post('/students', async(req, res) => {
+app.post('/students', validateStudent, catchAsync(async (req, res) => {
     const student = new Student(req.body.student);
     await student.save();
     // res.redirect(`/students/${student._id}`);
     res.redirect('students/newhome');
-})
+}))
 
-app.get('/students/:id', async(req, res) => {
+app.get('/students/:id', catchAsync(async (req, res) => {
     const { id } = req.params;
     const student = await Student.findById(id);
     res.render('students/edit', { student })
-})
+}))
 
 
 //teacher route
@@ -74,18 +105,18 @@ app.get('/teachers/edit', (req, res) => {
     res.render('teachers/edit');
 })
 
-app.post('/teachers', async(req, res) => {
+app.post('/teachers', validateTeacher, catchAsync(async (req, res) => {
     const teacher = new Teacher(req.body.teacher);
     await teacher.save();
     // res.redirect(`/students/${student._id}`);
     res.redirect('/teachers/main');
-})
+}))
 
-app.get('/teachers/:id', async(req, res) => {
+app.get('/teachers/:id', catchAsync(async (req, res) => {
     const { id } = req.params;
     const teacher = await Teacher.findById(id);
     res.render('teachers/edit', { teacher })
-})
+}))
 
 
 app.get('/login', (req, res) => {
@@ -132,6 +163,19 @@ app.get('/editstudent', (req, res) => {
 app.get('/priti', (req, res) => {
     res.render("priti");
 })
+
+
+app.all('*', (req, res, next) => {
+    next(new expressError('Page Not Found', 404))
+})
+
+app.use((err, req, res, next) => {
+    const { statusCode = 500 } = err;
+    if (!err.message)
+        err.message = "Oh No, Something went wrong!"
+    res.status(statusCode).render('error', { err })
+})
+
 
 app.listen(3000, () => {
     console.log('listening on port 3000');

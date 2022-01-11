@@ -1,5 +1,8 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const passport = require('passport');
+const passportLocalMongoose = require('passport-local-mongoose');
+const findOrCreate = require('mongoose-findorcreate');
 
 const studentSchema = new Schema({
     firstName: String,
@@ -8,12 +11,17 @@ const studentSchema = new Schema({
     gender: String,
     subject: String,
     address: String,
-    email: String,
-    phone: String,
-    additionalInfo: String,
-
+    email: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    phone: Number,
+    additionalInfo: String
 });
 
-const Student = mongoose.model('Student', studentSchema);
 
+studentSchema.plugin(passportLocalMongoose);
+studentSchema.plugin(findOrCreate)
+const Student = mongoose.model('Student', studentSchema);
 module.exports = Student;
