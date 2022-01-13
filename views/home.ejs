@@ -25,10 +25,10 @@
         <div class="container">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>                        
-      </button>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
                 <a class="navbar-brand" href="/home">Level Up !</a>
             </div>
             <div class="collapse navbar-collapse" id="myNavbar">
@@ -171,11 +171,12 @@
             <div class="row">
                 <div class="col-sm-5">
                     <p>Contact us and we'll get back to you within 24 hours.</p>
-                    <p><span class="glyphicon glyphicon-map-marker"></span> VJTI CS,EXTC</p>
-                    <p><span class="glyphicon glyphicon-phone"></span> +91 8275895425 &nbsp; 9136809070</p>
-                    <p><span class="glyphicon glyphicon-envelope"></span>chavleavishkar@gmail.com &nbsp; pritighuge111@gmail.com</p>
+                    <p><span class="glyphicon glyphicon-map-marker"></span> VJTI CS</p>
+                    <p><span class="glyphicon glyphicon-phone"></span> +91 8275895425</p>
+                    <p><span class="glyphicon glyphicon-envelope"></span>chavleavishkar@gmail.com</p>
                 </div>
-                <a id="insta" href="https://instagram.com/iavishkar_?utm_medium=copy_link"> <button>INSTAGRAM</button></a>
+                <a id="insta" href="https://instagram.com/iavishkar_?utm_medium=copy_link">
+                    <button>INSTAGRAM</button></a>
                 <BR></BR>
                 <a id="fb" href="https://www.facebook.com/avishkar.chavle.1"> <button>FACEBOOK</button></a>
                 <BR></BR>
@@ -197,9 +198,9 @@
     </footer>
 
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             // Add smooth scrolling to all links in navbar + footer link
-            $(".navbar a, footer a[href='#myPage']").on('click', function(event) {
+            $(".navbar a, footer a[href='#myPage']").on('click', function (event) {
                 // Make sure this.hash has a value before overriding default behavior
                 if (this.hash !== "") {
                     // Prevent default anchor click behavior
@@ -212,7 +213,7 @@
                     // The optional number (900) specifies the number of milliseconds it takes to scroll to the specified area
                     $('html, body').animate({
                         scrollTop: $(hash).offset().top
-                    }, 900, function() {
+                    }, 900, function () {
 
                         // Add hash (#) to URL when done scrolling (default click behavior)
                         window.location.hash = hash;
@@ -220,8 +221,8 @@
                 } // End if
             });
 
-            $(window).scroll(function() {
-                $(".slideanim").each(function() {
+            $(window).scroll(function () {
+                $(".slideanim").each(function () {
                     var pos = $(this).offset().top;
 
                     var winTop = $(window).scrollTop();

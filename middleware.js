@@ -23,3 +23,36 @@ module.exports.validateStudent = (req, res, next) => {
         next()
     }
 }
+
+module.exports.isLoggedIn = (req, res, next) => {
+    if (!req.isAuthenticated()) {
+        req.flash('error', 'you must be logged in');
+        return res.redirect('/login');
+    }
+
+    next();
+}
+
+module.exports.isOwner = async (req, res, next) => {
+    const { id } = req.params;
+    const student = await Student.findById(id);
+    // console.log(student.author);
+    if (!student.author.equals(req.user._id)) {
+        req.flash('error', 'You do not have permission to do that!');
+        return res.redirect(`/login`);
+    }
+    // console.log(req.user);
+    next();
+}
+
+module.exports.isTeacher = async (req, res, next) => {
+    const { id } = req.params;
+    const teacher = await Teacher.findById(id);
+    // console.log(teacher.author);
+    if (!teacher.author.equals(req.user._id)) {
+        req.flash('error', 'You do not have permission to do that!');
+        return res.redirect(`/login`);
+    }
+    // console.log(req.user);
+    next();
+}
