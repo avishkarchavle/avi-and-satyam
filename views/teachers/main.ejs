@@ -17,13 +17,13 @@
 
         <div class="container-fluid" style="background-color: black;">
             <form class="d-flex">
-                <a href="/home">
-                    <h1 class="btn btn-outline-success" id="profile">Home</h1>
+                <a href="/teachers/<%=teacher._id%>/logout">
+                    <h1 class="btn btn-outline-success" id="profile">LOGOUT</h1>
                 </a>
             </form>
             <h1 class="navbar-brand" style="color: green; text-align: center; font-size: 50px;">Level Up!</h1>
             <form class="d-flex">
-                <a href="/teachers/edit">
+                <a href="/teachers/<%=teacher._id%>/edit">
                     <h1 class="btn btn-outline-success" id="profile">Profile</h1>
                 </a>
             </form>
@@ -41,38 +41,38 @@
     </nav>
 
     <nav class="mid" id="pri" style="border-bottom: 1.5px solid green; ">
-
-        <ul class="nav flex-column" id="ul" style="border-right: 1.5px solid green;">
-            <!-- <li class="nav-item" id="lin">
+        <%- include('../partials/flash')%>
+            <ul class="nav flex-column" id="ul" style="border-right: 1.5px solid green;">
+                <!-- <li class="nav-item" id="lin">
                 <a class="nav-link active" aria-current="page" href="#" id="lol">Ratings</a>
             </li> -->
-            <li class="nav-item" id="lin">
-                <a class="nav-link" href="/askq" id="lol">Ask a Question</a>
-            </li>
-            <li class="nav-item" id="lin">
+                <li class="nav-item" id="lin">
+                    <a class="nav-link" href="/teachers/<%=teacher._id%>/askq" id="lol">Ask a Question</a>
+                </li>
+                <li class="nav-item" id="lin">
 
-                <a class="nav-link" href="/pyq" id="lol">Previous Yr Que Bank</a>
-            </li>
+                    <a class="nav-link" href="/teachers/<%=teacher._id%>/pyq" id="lol">Previous Yr Que Bank</a>
+                </li>
 
-            <li class="nav-item" id="lin">
+                <li class="nav-item" id="lin">
 
-                <a class="nav-link " href="/books" id="lol">
-                    Books
-                </a>
+                    <a class="nav-link " href="/teachers/<%=teacher._id%>/books" id="lol">
+                        Books
+                    </a>
 
-            </li>
+                </li>
 
-        </ul>
-        <div>
-            <!-- <img src="https://i.etsystatic.com/10702961/r/il/c928ec/1102924483/il_794xN.1102924483_nv9m.jpg " style="height: 300px; width: 300px; margin-left: 300px; margin-top: 50px;"> -->
-        </div>
+            </ul>
+            <div>
+                <!-- <img src="https://i.etsystatic.com/10702961/r/il/c928ec/1102924483/il_794xN.1102924483_nv9m.jpg " style="height: 300px; width: 300px; margin-left: 300px; margin-top: 50px;"> -->
+            </div>
 
-        <!-- <div>
+            <!-- <div>
             <img id="pic" src="https://images.unsplash.com/photo-1488190211105-8b0e65b80b4e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8N3x8c3R1ZHl8ZW58MHx8MHx8&auto=format&fit=crop&w=1200&q=60" alt="">
         </div> -->
-        <div id="book">
-            <link rel="stylesheet" href="/books">
-        </div>
+            <div id="book">
+                <link rel="stylesheet" href="/books">
+            </div>
     </nav>
 
 
