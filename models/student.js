@@ -8,6 +8,7 @@ const studentSchema = new Schema({
     gender: String,
     subject: String,
     address: String,
+    district: String,
     email: {
         type: String,
         required: true,

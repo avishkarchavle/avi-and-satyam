@@ -60,10 +60,6 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 app.use((req, res, next) => {
-    // if (!['/login', '/register', '/'].includes(req.originalUrl)) {
-    //     req.session.returnTo = req.originalUrl;
-    // }
-    // console.log(req.query);
     res.locals.currentUser = req.user;
     res.locals.success = req.flash('success')
     res.locals.error = req.flash('error');
@@ -105,13 +101,14 @@ app.get('/students/new', isLoggedIn, (req, res) => {
 app.get('/students/:id/newhome', isLoggedIn, isOwner, async (req, res) => {
     const { id } = req.params;
     const student = await Student.findById(id);
-    res.render('students/newhome', { student });
+    const teachers = {}
+    res.render('students/newhome', { student, teachers });
 })
 
 app.post('/students', validateStudent, isLoggedIn, catchAsync(async (req, res) => {
     const student = new Student(req.body.student);
     student.author = req.user._id;
-    console.log(student.author);
+
     await student.save();
     req.flash('success', "Student Successfully Registered!!!");
     res.redirect(`/students/${student._id}/newhome`);
@@ -153,6 +150,18 @@ app.get('/students/:id/askq', isLoggedIn, isOwner, (req, res) => {
     res.render("askq");
 })
 
+app.post('/students/:id/search', isLoggedIn, isOwner, catchAsync(async (req, res) => {
+    const { id } = req.params;
+    const student = await Student.findById(id);
+    const district = req.body.search.toLowerCase();
+
+    const teachers = await Teacher.find({ "district": district })
+    if (teachers) {
+        res.render('students/searchteacher', { student, teachers })
+    }
+
+}))
+
 //login
 app.get('/already', (req, res) => {
     res.render("already");
@@ -160,18 +169,13 @@ app.get('/already', (req, res) => {
 
 app.post('/already', passport.authenticate('local', { failureFlash: true, failureRedirect: '/login' }), catchAsync(async (req, res) => {
     const user = await User.findById(req.user._id);
-    console.log(user);
+    // console.log(user);
     const student = await Student.find({ author: user._id });
     const teacher = await Teacher.find({ author: user._id });
-    console.log(student);
-    console.log(teacher);
     if (student.length) {
         res.redirect(`/students/${student[0]._id}/edit`);
     } else if (teacher.length) {
         res.redirect(`/teachers/${teacher[0]._id}/edit`);
-    } else {
-        req.flash('error', 'Invalid lOGIN');
-        res.redirect('/already');
     }
 }))
 
@@ -206,12 +210,11 @@ app.get('/teachers/new', isLoggedIn, (req, res) => {
 app.get('/teachers/:id/main', isLoggedIn, isTeacher, async (req, res) => {
     const { id } = req.params;
     const teacher = await Teacher.findById(id);
-    res.render('teachers/main', { teacher });
+    const students = {}
+    res.render('teachers/main', { teacher, students });
 })
 
 app.post('/teachers', validateTeacher, isLoggedIn, catchAsync(async (req, res) => {
-
-    const { password } = req.body.teacher;
     const teacher = new Teacher(req.body.teacher);
     teacher.author = req.user._id;
     await teacher.save();
@@ -250,6 +253,18 @@ app.get('/teachers/:id/pyq', isLoggedIn, isTeacher, (req, res) => {
 app.get('/teachers/:id/askq', isLoggedIn, isTeacher, (req, res) => {
     res.render("askq");
 })
+
+app.post('/teachers/:id/search', isLoggedIn, isTeacher, catchAsync(async (req, res) => {
+    const { id } = req.params;
+    const teacher = await Teacher.findById(id);
+    const district = req.body.search.toLowerCase();
+    const students = await Student.find({ "district": district })
+    console.log(students);
+    if (students) {
+        res.render('teachers/searchstudent', { teacher, students })
+    }
+}))
+
 
 //main page for studwent and teacher login
 app.get('/login', (req, res) => {

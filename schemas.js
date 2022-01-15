@@ -14,6 +14,7 @@ module.exports.studentSchema = Joi.object({
         username: Joi.string().optional(),
         password: Joi.string().optional(),
         additionalInfo: Joi.string().required(),
+        district: Joi.string().allow(''),
     }).required(),
 })
 
@@ -31,5 +32,6 @@ module.exports.teacherSchema = Joi.object({
         username: Joi.string().optional(),
         password: Joi.string().optional(),
         additionalInfo: Joi.string().required(),
+        district: Joi.string().required(),
     }).required(),
 })
