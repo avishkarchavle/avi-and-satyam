@@ -1,6 +1,10 @@
+if (process.env.NODE_ENV !== "production") {
+    require('dotenv').config();
+}
+
 const express = require("express");
 const app = express()
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 const ejsMate = require('ejs-mate');
 const path = require("path");
 const methodOverride = require('method-override')
@@ -14,6 +18,10 @@ const passport = require('passport');
 const localStrategy = require("passport-local")
 const flash = require('connect-flash');
 const { validateTeacher, validateStudent, isLoggedIn, isOwner, isTeacher } = require('./middleware')
+const mongoSanitize = require('express-mongo-sanitize');
+
+const MongoStore = require('connect-mongo');
+
 
 app.use(express.urlencoded({ extended: true }))
 app.use(methodOverride("_method"))
@@ -27,7 +35,9 @@ app.engine('ejs', ejsMate)
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-mongoose.connect('mongodb://localhost:27017/levelUp', {
+const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/levelUp';
+
+mongoose.connect(dbUrl, {
     useNewUrlParser: true,
 });
 
@@ -37,19 +47,39 @@ db.once("open", () => {
     console.log("Databse connected");
 });
 
-const sessionConfig = {
+app.use(
+    mongoSanitize({
+        replaceWith: '_',
+    }),
+);
+
+const secret = process.env.SECRET || "thisshouldbeabettersecret";
+const store = MongoStore.create({
+    mongoUrl: dbUrl,
+    crypto: {
+        secret
+    },
+    touchAfter: 24 * 60 * 60
+})
+store.on("error", function (e) {
+    console.log("SESSION STORE ERROR", e)
+})
+
+const sessionconfig = {
+    store,
     name: 'session',
-    secret: 'this is my secret',
+    secret,
     resave: false,
     saveUninitialized: true,
     cookie: {
         httpOnly: true,
+        // secure:true,
         expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
         maxAge: 1000 * 60 * 60 * 24 * 7
     }
-}
+};
 
-app.use(session(sessionConfig))
+app.use(session(sessionconfig))
 app.use(flash());
 
 app.use(passport.initialize());
@@ -82,7 +112,7 @@ app.get('/students/register', (req, res) => {
     res.render('students/register')
 })
 
-app.post('/students/register', catchAsync(async(req, res) => {
+app.post('/students/register', catchAsync(async (req, res) => {
     try {
         const { username, password, email } = req.body;
         const user = new User({ email, username });
@@ -103,14 +133,14 @@ app.get('/students/new', isLoggedIn, (req, res) => {
     res.render('students/new');
 })
 
-app.get('/students/:id/newhome', isLoggedIn, isOwner, async(req, res) => {
+app.get('/students/:id/newhome', isLoggedIn, isOwner, async (req, res) => {
     const { id } = req.params;
     const student = await Student.findById(id);
     const teachers = {}
     res.render('students/newhome', { student, teachers });
 })
 
-app.post('/students', validateStudent, isLoggedIn, catchAsync(async(req, res) => {
+app.post('/students', validateStudent, isLoggedIn, catchAsync(async (req, res) => {
     const student = new Student(req.body.student);
     student.author = req.user._id;
 
@@ -120,15 +150,16 @@ app.post('/students', validateStudent, isLoggedIn, catchAsync(async(req, res) =>
 
 }))
 
-app.get('/students/:id/edit', isLoggedIn, isOwner, catchAsync(async(req, res) => {
+app.get('/students/:id/edit', isLoggedIn, isOwner, catchAsync(async (req, res) => {
     const { id } = req.params;
     const student = await Student.findById(id);
     res.render('students/edit', { student })
 }))
 
-app.patch('/students/:id', isLoggedIn, isOwner, catchAsync(async(req, res) => {
+app.patch('/students/:id', isLoggedIn, isOwner, catchAsync(async (req, res) => {
     const { id } = req.params;
-    const student = await Student.findByIdAndUpdate(id, {...req.body.student });
+    const student = await Student.findByIdAndUpdate(id, { ...req.body.student });
+    // console.log(student);
     req.flash('success', "Edited information successfully!");
     res.redirect(`/students/${student._id}/edit`);
 }))
@@ -137,7 +168,7 @@ app.get('/students/:id/books', isLoggedIn, isOwner, (req, res) => {
     res.render("books");
 })
 
-app.get('/students/:id/logout', isLoggedIn, isOwner, async(req, res) => {
+app.get('/students/:id/logout', isLoggedIn, isOwner, async (req, res) => {
     req.logout();
     req.flash('success', "Goodbye!");
     res.redirect('/home');
@@ -155,7 +186,7 @@ app.get('/students/:id/askq', isLoggedIn, isOwner, (req, res) => {
     res.render("askq");
 })
 
-app.post('/students/:id/search', isLoggedIn, isOwner, catchAsync(async(req, res) => {
+app.post('/students/:id/search', isLoggedIn, isOwner, catchAsync(async (req, res) => {
     const { id } = req.params;
     const student = await Student.findById(id);
     const district = req.body.search.toLowerCase();
@@ -172,7 +203,7 @@ app.get('/already', (req, res) => {
     res.render("already");
 })
 
-app.post('/already', passport.authenticate('local', { failureFlash: true, failureRedirect: '/login' }), catchAsync(async(req, res) => {
+app.post('/already', passport.authenticate('local', { failureFlash: true, failureRedirect: '/login' }), catchAsync(async (req, res) => {
     const user = await User.findById(req.user._id);
     // console.log(user);
     const student = await Student.find({ author: user._id });
@@ -191,7 +222,7 @@ app.get('/teachers/register', (req, res) => {
     res.render('teachers/register')
 })
 
-app.post('/teachers/register', catchAsync(async(req, res) => {
+app.post('/teachers/register', catchAsync(async (req, res) => {
     try {
         const { username, password, email } = req.body;
         const user = new User({ email, username });
@@ -212,14 +243,14 @@ app.get('/teachers/new', isLoggedIn, (req, res) => {
     res.render("teachers/new");
 })
 
-app.get('/teachers/:id/main', isLoggedIn, isTeacher, async(req, res) => {
+app.get('/teachers/:id/main', isLoggedIn, isTeacher, async (req, res) => {
     const { id } = req.params;
     const teacher = await Teacher.findById(id);
     const students = {}
     res.render('teachers/main', { teacher, students });
 })
 
-app.post('/teachers', validateTeacher, isLoggedIn, catchAsync(async(req, res) => {
+app.post('/teachers', validateTeacher, isLoggedIn, catchAsync(async (req, res) => {
     const teacher = new Teacher(req.body.teacher);
     teacher.author = req.user._id;
     await teacher.save();
@@ -228,20 +259,20 @@ app.post('/teachers', validateTeacher, isLoggedIn, catchAsync(async(req, res) =>
 
 }))
 
-app.get('/teachers/:id/edit', isLoggedIn, isTeacher, catchAsync(async(req, res) => {
+app.get('/teachers/:id/edit', isLoggedIn, isTeacher, catchAsync(async (req, res) => {
     const { id } = req.params;
     const teacher = await Teacher.findById(id);
     res.render('teachers/edit', { teacher })
 }))
 
-app.patch('/teachers/:id', isLoggedIn, isTeacher, catchAsync(async(req, res) => {
+app.patch('/teachers/:id', isLoggedIn, isTeacher, catchAsync(async (req, res) => {
     const { id } = req.params;
-    const teacher = await Teacher.findByIdAndUpdate(id, {...req.body.teacher });
+    const teacher = await Teacher.findByIdAndUpdate(id, { ...req.body.teacher });
     req.flash('success', "Edited information successfully!");
     res.redirect(`/teachers/${teacher._id}/edit`);
 }))
 
-app.get('/teachers/:id/logout', isLoggedIn, isTeacher, async(req, res) => {
+app.get('/teachers/:id/logout', isLoggedIn, isTeacher, async (req, res) => {
     req.logout();
     req.flash('success', "Goodbye!");
     res.redirect('/home');
@@ -259,7 +290,7 @@ app.get('/teachers/:id/askq', isLoggedIn, isTeacher, (req, res) => {
     res.render("askq");
 })
 
-app.post('/teachers/:id/search', isLoggedIn, isTeacher, catchAsync(async(req, res) => {
+app.post('/teachers/:id/search', isLoggedIn, isTeacher, catchAsync(async (req, res) => {
     const { id } = req.params;
     const teacher = await Teacher.findById(id);
     const district = req.body.search.toLowerCase();
